@@ -12,6 +12,14 @@
 
   const selected = $derived(items.find((i) => i.id === selectedId) ?? null);
 
+  // Auto-select a receipt when nothing valid is selected (e.g. items that
+  // arrived via the watched folder), so the review panel + buttons are visible.
+  $effect(() => {
+    if (!items.find((i) => i.id === selectedId) && items.length) {
+      selectedId = (items.find((i) => i.status === 'ready') ?? items[0]).id;
+    }
+  });
+
   async function refresh() { items = await api.list(); }
 
   onMount(async () => {
