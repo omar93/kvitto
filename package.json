@@ -4,17 +4,26 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
     "cli": "node cli.js"
   },
   "dependencies": {
+    "@sveltejs/adapter-node": "^5.5.7",
+    "chokidar": "^5.0.0",
     "googleapis": "^144.0.0",
     "tesseract.js": "^5.1.1",
     "unpdf": "^1.6.2"
   },
   "devDependencies": {
+    "@sveltejs/kit": "^2.68.0",
+    "@sveltejs/vite-plugin-svelte": "^7.1.2",
     "pdf-lib": "^1.17.1",
+    "svelte": "^5.56.4",
+    "vite": "^8.1.0",
     "vitest": "^2.1.0"
   }
 }
