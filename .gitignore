@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+
+# Build output
+.svelte-kit/
+build/
+dist/
+
+# Secrets / credentials — never commit
+*.key.json
+service-account*.json
+credentials*.json
+.env
+.env.*
+!.env.example
+
+# Local app data
+data/
+*.local.json
+
+# OS / editor
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
