@@ -45,6 +45,17 @@ Single-responsibility modules under `src/lib/server/`:
 - `settings/` — JSON config (confirmation toggles, last-used values, learned categories)
 - `sheets/` — service-account client, tab resolve/create from template, row + border writer
 
+## Web app (Plan 2)
+```bash
+npm run dev      # open the printed URL
+```
+- Paste a screenshot (Ctrl+V), drop files, or pick files → they enter the review queue.
+- A watched folder can be set under **Inställningar** (`watchFolder`).
+- Review a receipt, hit **Förhandsgranska** for a dry-run, then **Skriv till Sheet** to commit.
+- Nothing is written to the sheet until you click **Skriv till Sheet**.
+- Set `GOOGLE_APPLICATION_CREDENTIALS` (default `credentials.json`), `KVITTO_SPREADSHEET_ID`,
+  and `KVITTO_TEMPLATE_TAB` (default `Mall`) in the environment, or via Settings.
+
 ## Tests
 ```bash
 npm test
