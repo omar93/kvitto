@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { listTabs, resolveTab } from './tabs.js';
+import { listTabs, resolveTab, findTab } from './tabs.js';
 
 function fakeSheets(tabs) {
   const state = tabs.map((t) => ({ properties: t }));
@@ -23,6 +23,15 @@ describe('listTabs', () => {
       { title: 'TEMPLATE', sheetId: 1 },
       { title: '2026-06/07', sheetId: 2 }
     ]);
+  });
+});
+
+describe('findTab', () => {
+  it('returns the tab when present and null when absent', async () => {
+    const s = fakeSheets([{ title: '2026-06/07', sheetId: 2 }]);
+    expect(await findTab(s, 'SID', '2026-06/07')).toEqual({ title: '2026-06/07', sheetId: 2 });
+    expect(await findTab(s, 'SID', 'nope')).toBeNull();
+    expect(s.spreadsheets.batchUpdate).not.toHaveBeenCalled();
   });
 });
 

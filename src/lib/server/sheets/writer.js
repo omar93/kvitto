@@ -1,4 +1,4 @@
-import { resolveTab } from './tabs.js';
+import { resolveTab, findTab } from './tabs.js';
 
 // Column J is the 10th column (0-indexed 9); N is index 13 -> end-exclusive 14.
 const COL_J_INDEX = 9;
@@ -52,8 +52,21 @@ export function buildReceiptRows({ receipt, startRow, tabName, sheetId, location
  */
 export async function writeReceipt(sheets, spreadsheetId, receipt, opts) {
   const { tabName, location, card, templateTab, create = true, dryRun = true } = opts;
-  const tab = await resolveTab(sheets, spreadsheetId, tabName, { templateTab, create });
-  const startRow = await findNextRow(sheets, spreadsheetId, tab.title);
+
+  // Dry-run must never write: only look the tab up, never create it.
+  let tab = await findTab(sheets, spreadsheetId, tabName);
+  let startRow;
+  if (tab) {
+    startRow = await findNextRow(sheets, spreadsheetId, tab.title);
+  } else if (dryRun) {
+    // The tab would be created on commit; show a best-effort plan at row 2.
+    tab = { title: tabName, sheetId: 0 };
+    startRow = 2;
+  } else {
+    tab = await resolveTab(sheets, spreadsheetId, tabName, { templateTab, create });
+    startRow = await findNextRow(sheets, spreadsheetId, tab.title);
+  }
+
   const plan = buildReceiptRows({ receipt, startRow, tabName: tab.title, sheetId: tab.sheetId, location, card });
 
   if (dryRun) return { plan, applied: false };
