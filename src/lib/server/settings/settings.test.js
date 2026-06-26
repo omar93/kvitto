@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { getDefaultSettings, loadSettings, saveSettings, normalizeItemKey } from './settings.js';
+import { getDefaultSettings, loadSettings, saveSettings, normalizeItemKey, updateSettings } from './settings.js';
 
 let dir, file;
 beforeEach(async () => { dir = await mkdtemp(join(tmpdir(), 'kvitto-')); file = join(dir, 'settings.json'); });
@@ -29,5 +29,15 @@ describe('settings load/save', () => {
     await saveSettings(file, s);
     const again = await loadSettings(file);
     expect(again.learnedCategories['cola + pant']).toBe('Läsk/Snäx');
+  });
+});
+
+describe('updateSettings', () => {
+  it('deep-merges a patch and persists it', async () => {
+    await updateSettings(file, { lastUsed: { location: 'Stockholm' } });
+    const merged = await updateSettings(file, { lastUsed: { card: 'Skandia' } });
+    expect(merged.lastUsed).toEqual({ location: 'Stockholm', card: 'Skandia' });
+    const reloaded = await loadSettings(file);
+    expect(reloaded.lastUsed).toEqual({ location: 'Stockholm', card: 'Skandia' });
   });
 });
