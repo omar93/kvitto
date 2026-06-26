@@ -28,6 +28,16 @@ export function createService(config) {
   const getSettings = () => loadSettings(settingsPath);
   const sheets = () => createClient({ keyFile });
 
+  // Settings (the UI) win over the static config/env so the app is usable in
+  // `npm run dev` without exporting environment variables.
+  async function sheetConfig() {
+    const s = await getSettings();
+    return {
+      spreadsheetId: s.sheet.spreadsheetId || spreadsheetId,
+      templateTab: s.sheet.templateTab || templateTab
+    };
+  }
+
   async function ingest({ buffer, filename, mimetype, source }) {
     const item = queue.add({ filename, mimetype, buffer, source });
     const settings = await getSettings();
@@ -53,8 +63,9 @@ export function createService(config) {
     async preview(id) {
       const it = queue.get(id);
       const { location, card, tab } = it.meta;
-      const result = await write(sheets(), spreadsheetId, it.receipt, {
-        tabName: tab, location, card, templateTab, create: true, dryRun: true
+      const cfg = await sheetConfig();
+      const result = await write(sheets(), cfg.spreadsheetId, it.receipt, {
+        tabName: tab, location, card, templateTab: cfg.templateTab, create: true, dryRun: true
       });
       return result;
     },
@@ -62,8 +73,9 @@ export function createService(config) {
     async commit(id) {
       const it = queue.get(id);
       const { location, card, tab } = it.meta;
-      const result = await write(sheets(), spreadsheetId, it.receipt, {
-        tabName: tab, location, card, templateTab, create: true, dryRun: false
+      const cfg = await sheetConfig();
+      const result = await write(sheets(), cfg.spreadsheetId, it.receipt, {
+        tabName: tab, location, card, templateTab: cfg.templateTab, create: true, dryRun: false
       });
       const settings = await getSettings();
       let learned = settings.learnedCategories;
@@ -78,7 +90,8 @@ export function createService(config) {
     getSettings,
     updateSettings: (patch) => updateSettingsFn(settingsPath, patch),
     async listSheetTabs() {
-      return listTabs(sheets(), spreadsheetId);
+      const cfg = await sheetConfig();
+      return listTabs(sheets(), cfg.spreadsheetId);
     }
   };
 }

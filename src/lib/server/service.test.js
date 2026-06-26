@@ -58,6 +58,20 @@ describe('service.commit', () => {
   });
 });
 
+describe('sheet config precedence', () => {
+  it('prefers settings.sheet over the static config', async () => {
+    const writeReceipt = vi.fn().mockResolvedValue({ applied: false, plan: {} });
+    const svc = createService(baseConfig({ writeReceipt }));
+    await svc.updateSettings({ sheet: { spreadsheetId: 'FROM_SETTINGS', templateTab: 'Mall2' } });
+    const item = await svc.ingest({ buffer: Buffer.from('x'), filename: 'k.pdf', mimetype: 'application/pdf', source: 'upload' });
+    await svc.preview(item.id);
+    expect(writeReceipt).toHaveBeenCalledWith(
+      { __sheets: true }, 'FROM_SETTINGS', readyReceipt,
+      expect.objectContaining({ templateTab: 'Mall2', dryRun: true })
+    );
+  });
+});
+
 describe('service.preview', () => {
   it('calls writeReceipt with dryRun true', async () => {
     const writeReceipt = vi.fn().mockResolvedValue({ applied: false, plan: { valueRange: { range: 'X' } } });
