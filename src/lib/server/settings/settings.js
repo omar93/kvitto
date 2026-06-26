@@ -39,3 +39,10 @@ export async function saveSettings(filePath, settings) {
   await mkdir(dirname(filePath), { recursive: true });
   await writeFile(filePath, JSON.stringify(settings, null, 2), 'utf8');
 }
+
+export async function updateSettings(filePath, patch) {
+  const current = await loadSettings(filePath);
+  const merged = deepMerge(current, patch);
+  await saveSettings(filePath, merged);
+  return merged;
+}

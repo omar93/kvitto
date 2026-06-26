@@ -6,6 +6,12 @@ export async function listTabs(sheets, spreadsheetId) {
   }));
 }
 
+/** Returns the tab if it exists, else null. Never creates anything. */
+export async function findTab(sheets, spreadsheetId, tabName) {
+  const tabs = await listTabs(sheets, spreadsheetId);
+  return tabs.find((t) => t.title === tabName) || null;
+}
+
 /**
  * @returns {Promise<{ title: string, sheetId: number, created: boolean }>}
  */
