@@ -1,0 +1,56 @@
+import { CATEGORIES } from '../../types.js';
+
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+
+/** @returns {number|null} */
+export function coercePrice(v) {
+  if (typeof v === 'number') return Number.isFinite(v) ? v : null;
+  if (typeof v !== 'string') return null;
+  // strip currency + spaces (incl. nbsp), use ',' as decimal if present
+  let s = v.replace(/kr/gi, '').replace(/[\s ]/g, '').trim();
+  if (s === '') return null;
+  if (s.includes(',')) s = s.replace(/\./g, '').replace(',', '.');
+  const n = Number(s);
+  return Number.isFinite(n) ? n : null;
+}
+
+function normCategory(c) {
+  return CATEGORIES.includes(c) ? c : null;
+}
+
+/**
+ * @param {unknown} obj
+ * @returns {{ok: true, value: import('../../types.js').ReceiptData} | {ok: false, errors: string[]}}
+ */
+export function validateReceipt(obj) {
+  const errors = [];
+  if (!obj || typeof obj !== 'object') return { ok: false, errors: ['not an object'] };
+  const o = /** @type {any} */ (obj);
+
+  if (typeof o.store !== 'string' || o.store.trim() === '') errors.push('store missing');
+  if (typeof o.date !== 'string' || !DATE_RE.test(o.date)) errors.push('date must be YYYY-MM-DD');
+  if (!Array.isArray(o.items) || o.items.length === 0) errors.push('items must be a non-empty array');
+
+  const items = [];
+  if (Array.isArray(o.items)) {
+    o.items.forEach((it, i) => {
+      const price = coercePrice(it?.price);
+      if (typeof it?.name !== 'string' || it.name.trim() === '') errors.push(`item ${i}: name missing`);
+      if (price === null) errors.push(`item ${i}: price invalid`);
+      items.push({ name: String(it?.name ?? '').trim(), price: price ?? 0, category: normCategory(it?.category) });
+    });
+  }
+
+  if (errors.length) return { ok: false, errors };
+
+  const total = coercePrice(o.total);
+  return {
+    ok: true,
+    value: {
+      store: o.store.trim(),
+      date: o.date,
+      total: total ?? items.reduce((s, it) => s + it.price, 0),
+      items
+    }
+  };
+}
