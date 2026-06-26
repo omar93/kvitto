@@ -10,7 +10,16 @@ const here = dirname(fileURLToPath(import.meta.url));
 const doc = await PDFDocument.create();
 const font = await doc.embedFont(StandardFonts.Helvetica);
 const page = doc.addPage([595, 842]);
-page.drawText('Willys Mjolk 19,90', { x: 40, y: 760, size: 18, font });
+const lines = [
+  'Willys - Port73',
+  'Mjolk 0,5%        19,90',
+  'Banan             24,18',
+  'Totalt            44,08',
+  '2026-04-24'
+];
+lines.forEach((line, i) => {
+  page.drawText(line, { x: 40, y: 780 - i * 24, size: 16, font });
+});
 
 // useObjectStreams:false keeps a classic xref table that pdf-parse's bundled
 // (older) pdf.js can read.
