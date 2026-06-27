@@ -6,6 +6,7 @@ import { tabNameForDate } from './period/period.js';
 import { writeReceipt as defaultWrite } from './sheets/writer.js';
 import { listTabs } from './sheets/tabs.js';
 import { getCategoriesFromSheet } from './sheets/categories.js';
+import { getStoreMetaLists } from './sheets/store-meta.js';
 import { createSheetsClient as defaultCreateClient } from './sheets/client.js';
 import { CATEGORIES } from '../types.js';
 
@@ -50,6 +51,27 @@ export function createService(config) {
       if (list && list.length) return list;
     } catch { /* fall through to the built-in list */ }
     return CATEGORIES;
+  }
+
+  // "Plats" and "Köpt med" dropdown suggestions, scanned fresh from the sheet so
+  // values typed straight into the sheet show up; last-used values are merged in
+  // so a brand-new choice is still offered before it has been written.
+  async function getStoreMeta() {
+    const cfg = await sheetConfig();
+    const s = await getSettings();
+    const merge = (list, extra) => [...new Set([...(list || []), ...extra.filter(Boolean)])];
+    try {
+      const lists = await getStoreMetaLists(sheets(), cfg.spreadsheetId);
+      return {
+        locations: merge(lists.locations, [s.lastUsed.location]),
+        cards: merge(lists.cards, [s.lastUsed.card])
+      };
+    } catch {
+      return {
+        locations: [s.lastUsed.location].filter(Boolean),
+        cards: [s.lastUsed.card].filter(Boolean)
+      };
+    }
   }
 
   async function ingest({ buffer, filename, mimetype, source }) {
@@ -114,6 +136,7 @@ export function createService(config) {
 
     getSettings,
     getCategories,
+    getStoreMeta,
     updateSettings: (patch) => updateSettingsFn(settingsPath, patch),
     async listSheetTabs() {
       const cfg = await sheetConfig();

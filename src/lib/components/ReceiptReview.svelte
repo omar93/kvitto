@@ -1,6 +1,6 @@
 <script>
   import { CATEGORIES, api } from '$lib/client/api.js';
-  let { item, tabs, categories = CATEGORIES, onchange } = $props();
+  let { item, tabs, categories = CATEGORIES, locations = [], cards = [], onchange } = $props();
   const cats = $derived(categories?.length ? categories : CATEGORIES);
 
   // $state.snapshot unwraps Svelte's reactive proxy into a plain object
@@ -55,8 +55,14 @@
       <label>Datum <input bind:value={receipt.date} /></label>
     </div>
     <div class="row">
-      <label>Plats (M) <input bind:value={meta.location} /></label>
-      <label>Köpt med (N) <input bind:value={meta.card} /></label>
+      <label>Plats (M)
+        <input list="loc-list" bind:value={meta.location} />
+        <datalist id="loc-list">{#each locations as l}<option value={l}></option>{/each}</datalist>
+      </label>
+      <label>Köpt med (N)
+        <input list="card-list" bind:value={meta.card} />
+        <datalist id="card-list">{#each cards as c}<option value={c}></option>{/each}</datalist>
+      </label>
       <label>Flik
         <select bind:value={meta.tab}>
           {#if !tabs?.some((t) => t.title === meta.tab)}<option value={meta.tab}>{meta.tab} (skapas)</option>{/if}
@@ -66,13 +72,15 @@
     </div>
 
     <table>
-      <thead><tr><th>Vara</th><th>Pris</th><th>Pant</th><th>Kategori</th></tr></thead>
+      <thead><tr><th>Vara</th><th>Antal</th><th>Pris</th><th>Rabatt</th><th>Pant</th><th>Kategori</th></tr></thead>
       <tbody>
         {#each receipt.items as line}
           <tr>
             <td><input bind:value={line.name} /></td>
-            <td><input type="number" step="0.01" bind:value={line.price} /></td>
-            <td><input type="number" step="0.01" bind:value={line.deposit} /></td>
+            <td class="num"><input type="number" step="1" min="1" bind:value={line.quantity} /></td>
+            <td class="num"><input type="number" step="0.01" bind:value={line.price} /></td>
+            <td class="num"><input type="number" step="0.01" bind:value={line.discount} /></td>
+            <td class="num"><input type="number" step="0.01" bind:value={line.deposit} /></td>
             <td>
               <select bind:value={line.category}>
                 <option value={null}>—</option>
@@ -115,6 +123,7 @@
   input, select { padding: 4px 6px; }
   table { width: 100%; border-collapse: collapse; margin: 8px 0; }
   td, th { border: 1px solid #eee; padding: 4px; text-align: left; }
+  td.num input { width: 5.5em; }
   .actions { display: flex; gap: 8px; margin-top: 8px; }
   .msg { color: #2b6cb0; }
   .ocr { margin-top: 10px; color: #555; }

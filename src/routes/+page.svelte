@@ -7,6 +7,8 @@
   let items = $state([]);
   let tabs = $state([]);
   let categories = $state([]);
+  let locations = $state([]);
+  let cards = $state([]);
   let selectedId = $state(null);
   let dragOver = $state(false);
   let timer;
@@ -23,10 +25,15 @@
 
   async function refresh() { items = await api.list(); }
 
+  async function loadLists() {
+    try { categories = await api.categories(); } catch { /* keep current */ }
+    try { tabs = await api.tabs(); } catch { /* keep current */ }
+    try { const m = await api.storeMeta(); locations = m.locations ?? []; cards = m.cards ?? []; } catch { /* keep current */ }
+  }
+
   onMount(async () => {
     await refresh();
-    try { tabs = await api.tabs(); } catch { tabs = []; }
-    try { categories = await api.categories(); } catch { categories = []; }
+    await loadLists();
     timer = setInterval(refresh, 2000);
   });
   onDestroy(() => clearInterval(timer));
@@ -48,12 +55,9 @@
     uploadFiles([...(e.dataTransfer?.files ?? [])]);
   }
 
-  // Re-fetch categories and tabs when returning to the app (e.g. after editing
-  // the sheet in another tab), so the dropdowns reflect the latest sheet state.
-  async function onWindowFocus() {
-    try { categories = await api.categories(); } catch { /* keep current */ }
-    try { tabs = await api.tabs(); } catch { /* keep current */ }
-  }
+  // Re-fetch the sheet-backed dropdowns when returning to the app (e.g. after
+  // editing the sheet in another tab), so they reflect the latest sheet state.
+  const onWindowFocus = loadLists;
 </script>
 
 <svelte:window on:paste={onPaste} on:focus={onWindowFocus} />
@@ -80,7 +84,7 @@
   </div>
   <div>
     {#if selected && selected.status === 'ready'}
-      <ReceiptReview item={selected} {tabs} {categories} onchange={refresh} />
+      <ReceiptReview item={selected} {tabs} {categories} {locations} {cards} onchange={refresh} />
     {:else if selected}
       <p>Status: {selected.status}{selected.error ? ` — ${selected.error}` : ''}</p>
     {:else}

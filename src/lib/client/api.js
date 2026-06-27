@@ -23,7 +23,8 @@ export const api = {
   saveSettings: (patch) =>
     fetch('/api/settings', { method: 'PUT', headers: { 'content-type': 'application/json' }, body: JSON.stringify(patch) }).then(j),
   tabs: () => fetch('/api/tabs').then(j),
-  categories: () => fetch('/api/categories').then(j)
+  categories: () => fetch('/api/categories').then(j),
+  storeMeta: () => fetch('/api/store-meta').then(j)
 };
 
 // Fallback only; the live list comes from /api/categories (the sheet's validation).
