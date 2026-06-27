@@ -14,8 +14,8 @@ export function coercePrice(v) {
   return Number.isFinite(n) ? n : null;
 }
 
-function normCategory(c) {
-  return CATEGORIES.includes(c) ? c : null;
+function normCategory(c, categories) {
+  return categories.includes(c) ? c : null;
 }
 
 /** Strip a leading formula trigger (= + @) so Sheets treats the name as text. */
@@ -27,7 +27,7 @@ export function cleanName(s) {
  * @param {unknown} obj
  * @returns {{ok: true, value: import('../../types.js').ReceiptData} | {ok: false, errors: string[]}}
  */
-export function validateReceipt(obj) {
+export function validateReceipt(obj, categories = CATEGORIES) {
   const errors = [];
   if (!obj || typeof obj !== 'object') return { ok: false, errors: ['not an object'] };
   const o = /** @type {any} */ (obj);
@@ -43,7 +43,7 @@ export function validateReceipt(obj) {
       if (typeof it?.name !== 'string' || it.name.trim() === '') errors.push(`item ${i}: name missing`);
       if (price === null) errors.push(`item ${i}: price invalid`);
       const deposit = coercePrice(it?.deposit) ?? 0;
-      items.push({ name: cleanName(it?.name), price: price ?? 0, deposit, category: normCategory(it?.category) });
+      items.push({ name: cleanName(it?.name), price: price ?? 0, deposit, category: normCategory(it?.category, categories) });
     });
   }
 

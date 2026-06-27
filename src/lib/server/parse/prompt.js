@@ -1,6 +1,6 @@
 import { CATEGORIES } from '../../types.js';
 
-export function buildPrompt(rawText) {
+export function buildPrompt(rawText, categories = CATEGORIES) {
   return [
     'You extract structured data from a Swedish grocery store receipt.',
     'Return ONLY a JSON object with this exact shape:',
@@ -10,9 +10,8 @@ export function buildPrompt(rawText) {
     '  "total": number,            // total amount',
     '  "items": [ { "name": string, "price": number, "deposit": number, "category": string } ]',
     '}',
-    `Each item "category" MUST be exactly one of: ${CATEGORIES.map((c) => `"${c}"`).join(', ')}.`,
-    'Use "Mat" for normal groceries, "Läsk/Snäx" for soda/snacks/candy,',
-    '"Vård" for hygiene/health, "Hem" for household goods.',
+    `Each item "category" MUST be exactly one of: ${categories.map((c) => `"${c}"`).join(', ')}.`,
+    'Pick the closest fit for a grocery item (food, drinks/snacks, hygiene, household).',
     '"deposit" is the pant (bottle/can deposit) for that item, 0 if none. If a',
     'separate "pant" line follows an item, add its amount to that item\'s "deposit"',
     'instead of creating a separate item.',

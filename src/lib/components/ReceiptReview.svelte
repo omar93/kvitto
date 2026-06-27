@@ -1,6 +1,7 @@
 <script>
   import { CATEGORIES, api } from '$lib/client/api.js';
-  let { item, tabs, onchange } = $props();
+  let { item, tabs, categories = CATEGORIES, onchange } = $props();
+  const cats = $derived(categories?.length ? categories : CATEGORIES);
 
   // $state.snapshot unwraps Svelte's reactive proxy into a plain object
   // (structuredClone throws on the proxy).
@@ -75,7 +76,7 @@
             <td>
               <select bind:value={line.category}>
                 <option value={null}>—</option>
-                {#each CATEGORIES as c}<option value={c}>{c}</option>{/each}
+                {#each cats as c}<option value={c}>{c}</option>{/each}
               </select>
             </td>
           </tr>

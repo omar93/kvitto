@@ -6,7 +6,7 @@ import { applyCategories } from './categorize/categorize.js';
  * @param {{buffer:Buffer,filename?:string,mimetype?:string}} item
  * @param {{ settings: any, deps?: any }} ctx
  */
-export async function processReceipt(item, { settings, deps = {} }) {
+export async function processReceipt(item, { settings, categories, deps = {} }) {
   const extract = deps.extractText || extractText;
   const parse = deps.parseReceipt || parseReceipt;
   const apply = deps.applyCategories || applyCategories;
@@ -14,8 +14,8 @@ export async function processReceipt(item, { settings, deps = {} }) {
     const { text, source } = await extract({
       buffer: item.buffer, filename: item.filename, mimetype: item.mimetype
     });
-    const parsed = await parse(text, { host: settings.ollama.host, model: settings.ollama.model });
-    const receipt = { ...parsed, items: apply(parsed.items, settings.learnedCategories) };
+    const parsed = await parse(text, { host: settings.ollama.host, model: settings.ollama.model, categories });
+    const receipt = { ...parsed, items: apply(parsed.items, settings.learnedCategories, categories) };
     return { status: 'ready', text, receipt, source, error: null };
   } catch (err) {
     return { status: 'error', error: err.message };

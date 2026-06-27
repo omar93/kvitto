@@ -6,6 +6,7 @@
 
   let items = $state([]);
   let tabs = $state([]);
+  let categories = $state([]);
   let selectedId = $state(null);
   let dragOver = $state(false);
   let timer;
@@ -25,6 +26,7 @@
   onMount(async () => {
     await refresh();
     try { tabs = await api.tabs(); } catch { tabs = []; }
+    try { categories = await api.categories(); } catch { categories = []; }
     timer = setInterval(refresh, 2000);
   });
   onDestroy(() => clearInterval(timer));
@@ -71,7 +73,7 @@
   </div>
   <div>
     {#if selected && selected.status === 'ready'}
-      <ReceiptReview item={selected} {tabs} onchange={refresh} />
+      <ReceiptReview item={selected} {tabs} {categories} onchange={refresh} />
     {:else if selected}
       <p>Status: {selected.status}{selected.error ? ` — ${selected.error}` : ''}</p>
     {:else}

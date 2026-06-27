@@ -22,7 +22,9 @@ export const api = {
   settings: () => fetch('/api/settings').then(j),
   saveSettings: (patch) =>
     fetch('/api/settings', { method: 'PUT', headers: { 'content-type': 'application/json' }, body: JSON.stringify(patch) }).then(j),
-  tabs: () => fetch('/api/tabs').then(j)
+  tabs: () => fetch('/api/tabs').then(j),
+  categories: () => fetch('/api/categories').then(j)
 };
 
+// Fallback only; the live list comes from /api/categories (the sheet's validation).
 export const CATEGORIES = ['Mat', 'Läsk/Snäx', 'Vård', 'Hem'];

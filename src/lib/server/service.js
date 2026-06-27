@@ -5,7 +5,9 @@ import { recordCorrection } from './categorize/categorize.js';
 import { tabNameForDate } from './period/period.js';
 import { writeReceipt as defaultWrite } from './sheets/writer.js';
 import { listTabs } from './sheets/tabs.js';
+import { getCategoriesFromSheet } from './sheets/categories.js';
 import { createSheetsClient as defaultCreateClient } from './sheets/client.js';
+import { CATEGORIES } from '../types.js';
 
 function publicItem(it) {
   if (!it) return null;
@@ -38,10 +40,24 @@ export function createService(config) {
     };
   }
 
+  // Category list comes from the sheet's data validation (column M), cached after
+  // the first successful fetch; falls back to the built-in list.
+  let cachedCategories = null;
+  async function getCategories() {
+    if (cachedCategories) return cachedCategories;
+    const cfg = await sheetConfig();
+    try {
+      const list = await getCategoriesFromSheet(sheets(), cfg.spreadsheetId, cfg.templateTab);
+      if (list && list.length) { cachedCategories = list; return list; }
+    } catch { /* fall through to the built-in list */ }
+    return CATEGORIES;
+  }
+
   async function ingest({ buffer, filename, mimetype, source }) {
     const item = queue.add({ filename, mimetype, buffer, source });
     const settings = await getSettings();
-    const result = await process(item, { settings });
+    const categories = await getCategories();
+    const result = await process(item, { settings, categories });
     queue.update(item.id, result);
     queue.update(item.id, {
       meta: {
@@ -78,9 +94,10 @@ export function createService(config) {
         tabName: tab, location, card, templateTab: cfg.templateTab, create: true, dryRun: false
       });
       const settings = await getSettings();
+      const categories = await getCategories();
       let learned = settings.learnedCategories;
       for (const line of it.receipt.items) {
-        if (line.category) learned = recordCorrection(learned, line.name, line.category);
+        if (line.category) learned = recordCorrection(learned, line.name, line.category, categories);
       }
       await updateSettingsFn(settingsPath, { learnedCategories: learned, lastUsed: { location, card } });
       queue.update(id, { status: 'committed' });
@@ -88,6 +105,7 @@ export function createService(config) {
     },
 
     getSettings,
+    getCategories,
     updateSettings: (patch) => updateSettingsFn(settingsPath, patch),
     async listSheetTabs() {
       const cfg = await sheetConfig();
