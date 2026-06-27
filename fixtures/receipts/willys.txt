@@ -1,8 +1,6 @@
-            Port 73 Haninge
-            Tel: 08-12135620
-            Org: 556163-2232
+Port 73 Haninge
 -------------------------------------------
-========= Start Självscanning ===========
+========== Start Självscanning ===========
 KASSE VIT/RÖD FLG                    10,00
 LÖK RÖD 1KG                          13,90
 ROMANSALLAD                          14,90
@@ -25,7 +23,7 @@ DISKBORSTE GREPP                     19,90
 POWER INOX                           26,90
 TVÅLULL 100G                         19,90
 KEBABSKAV 750G        2st*88,90     177,80
-========= Slut Självscanning  ===========
+========== Slut Självscanning ===========
 -------------------------------------------
   Totalt 22 varor
  Totalt    720,03 SEK

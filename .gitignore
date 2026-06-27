@@ -18,6 +18,14 @@ credentials*.json
 data/
 *.local.json
 
+# Real receipt files may contain card/loyalty numbers — keep them out of git.
+# Commit a redacted *.txt + *.expected.json instead (see fixtures/receipts/README.md).
+fixtures/receipts/*.pdf
+fixtures/receipts/*.png
+fixtures/receipts/*.jpg
+fixtures/receipts/*.jpeg
+fixtures/receipts/*.webp
+
 # OS / editor
 .DS_Store
 Thumbs.db
