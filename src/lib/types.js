@@ -16,5 +16,5 @@
  * @property {ReceiptItem[]} items
  */
 
-/** Exact category strings used in the sheet's dropdown. */
-export const CATEGORIES = ['Mat', 'Läsk/Snäx', 'Vård', 'Hem'];
+/** Exact category strings used in the sheet's dropdown ("Annat" catches unknowns). */
+export const CATEGORIES = ['Mat', 'Läsk/Snäx', 'Vård', 'Hem', 'Annat'];

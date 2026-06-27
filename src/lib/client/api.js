@@ -28,4 +28,4 @@ export const api = {
 };
 
 // Fallback only; the live list comes from /api/categories (the sheet's validation).
-export const CATEGORIES = ['Mat', 'Läsk/Snäx', 'Vård', 'Hem'];
+export const CATEGORIES = ['Mat', 'Läsk/Snäx', 'Vård', 'Hem', 'Annat'];

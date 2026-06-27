@@ -12,8 +12,14 @@ describe('resolveCategory', () => {
     expect(resolveCategory('Banan', 'Mat', learned)).toBe('Mat');
   });
 
-  it('returns null for an invalid suggestion and no learned entry', () => {
-    expect(resolveCategory('Mystery', 'Bogus', learned)).toBeNull();
+  it('returns null for an invalid suggestion when "Annat" is not an allowed category', () => {
+    expect(resolveCategory('Mystery', 'Bogus', learned, ['Mat', 'Hem'])).toBeNull();
+  });
+
+  it('falls back to "Annat" for unknowns when that category is allowed', () => {
+    expect(resolveCategory('Mystery', 'Bogus', learned)).toBe('Annat');
+    // a known mapping still wins over the fallback
+    expect(resolveCategory('Cola + pant', null, learned)).toBe('Läsk/Snäx');
   });
 });
 
@@ -24,7 +30,7 @@ describe('applyCategories', () => {
       { name: 'Banan', price: 24.18, category: null }
     ];
     const out = applyCategories(items, { 'cola + pant': 'Läsk/Snäx' });
-    expect(out.map((i) => i.category)).toEqual(['Läsk/Snäx', null]);
+    expect(out.map((i) => i.category)).toEqual(['Läsk/Snäx', 'Annat']);
   });
 });
 
