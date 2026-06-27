@@ -78,8 +78,8 @@ describe('validateReceipt', () => {
     expect(r.ok).toBe(true);
     expect(r.value.items[0]).toMatchObject({ discount: 22.77, quantity: 1.002, deposit: 0 });
     expect(r.value.items[1]).toMatchObject({ discount: 0, quantity: 1, deposit: 0 });
-    // 112.62*1.002 - 22.77 = 90.075, plus 24.18
-    expect(r.value.total).toBeCloseTo(114.26, 1);
+    // (112.62 - 22.77) * 1.002 = 90.03, plus 24.18
+    expect(r.value.total).toBeCloseTo(114.21, 1);
   });
 
   it('rejects when store/date/items are missing or malformed', () => {

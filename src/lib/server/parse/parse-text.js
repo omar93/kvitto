@@ -80,7 +80,7 @@ export function parseReceiptText(rawText) {
 
   if (items.length < 2) return null;
 
-  const computed = items.reduce((acc, it) => acc + (it.price * it.quantity - it.discount + it.deposit), 0);
+  const computed = items.reduce((acc, it) => acc + ((it.price - it.discount) * it.quantity + it.deposit), 0);
   return {
     store: storeName(flat),
     date: findDate(flat),

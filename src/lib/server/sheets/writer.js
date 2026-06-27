@@ -7,13 +7,13 @@ const COL_N_END = 14;
 const BLACK = { red: 0, green: 0, blue: 0 };
 
 /**
- * The K-cell for one item, as a formula a human can inspect. The base is the
- * unit price (times quantity/weight), then each modifier from an indented line
- * is applied by its sign: discount subtracted, pant added (both flat line totals).
- *   price 24.18                                  -> 24.18                  (plain)
+ * The K-cell for one item, as a formula a human can inspect: discount is taken
+ * off the unit price, that is multiplied by quantity/weight, then pant is added —
+ * i.e. (price - discount) * qty + pant. Terms vanish when zero / qty is 1.
+ *   price 24.18                                  -> 24.18                       (plain)
  *   price 14.9, discount 5                       -> =SUM(14.9-5)
  *   price 14.9, qty 2                            -> =SUM(14.9*2)
- *   price 112.62, qty 1.002 (kg), discount 22.77 -> =SUM(112.62*1.002-22.77)
+ *   price 112.62, qty 1.002 (kg), discount 22.77 -> =SUM((112.62-22.77)*1.002)
  *   price 13, pant 2                             -> =SUM(13+2)
  *   price 13.15, qty 3, pant 6                   -> =SUM(13.15*3+6)
  */
@@ -27,8 +27,8 @@ export function itemPriceCell(it) {
   // Nothing to compute: keep a plain number so simple cells stay clean.
   if (d === 0 && pant === 0 && !multi) return p;
 
-  let expr = multi ? `${p}*${q}` : `${p}`;
-  if (d > 0) expr += `-${d}`;
+  const base = d > 0 ? `${p}-${d}` : `${p}`;
+  let expr = multi ? (d > 0 ? `(${base})*${q}` : `${base}*${q}`) : base;
   if (pant > 0) expr += `+${pant}`;
   return `=SUM(${expr})`;
 }
