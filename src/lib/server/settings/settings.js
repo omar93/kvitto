@@ -8,7 +8,7 @@ export function getDefaultSettings() {
     lastUsed: { location: '', card: '' },
     learnedCategories: {},
     sheet: { spreadsheetId: '', templateTab: '' },
-    ollama: { host: 'http://localhost:11434', model: 'llama3.1:8b', visionModel: 'llama3.2-vision' }
+    ollama: { host: 'http://localhost:11434', model: 'llama3.1:8b', visionModel: 'llama3.2-vision:latest' }
   };
 }
 
