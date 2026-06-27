@@ -27,8 +27,12 @@ export function buildReceiptRows({ receipt, startRow, tabName, sheetId, location
   // Safety net: a name starting with = + @ would be parsed as a formula by Sheets.
   const safeText = (s) => (typeof s === 'string' ? s.replace(/^\s*[=+@]+\s*/, '') : s);
 
+  // When an item has a deposit (pant), keep both in one cell as =SUM(price+pant)
+  // so the item and its pant are visible without extra rows.
+  const priceCell = (it) => (it.deposit > 0 ? `=SUM(${it.price}+${it.deposit})` : it.price);
+
   const storeRow = [safeText(receipt.store), `=SUM(K${firstItemRow}:K${lastItemRow})`, receipt.date, location, card];
-  const itemRows = receipt.items.map((it) => [safeText(it.name), it.price, '', it.category ?? '', '']);
+  const itemRows = receipt.items.map((it) => [safeText(it.name), priceCell(it), '', it.category ?? '', '']);
 
   const bottomBorder = (row, style) => ({
     updateBorders: {

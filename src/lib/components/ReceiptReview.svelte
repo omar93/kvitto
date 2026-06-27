@@ -65,12 +65,13 @@
     </div>
 
     <table>
-      <thead><tr><th>Vara</th><th>Pris</th><th>Kategori</th></tr></thead>
+      <thead><tr><th>Vara</th><th>Pris</th><th>Pant</th><th>Kategori</th></tr></thead>
       <tbody>
         {#each receipt.items as line}
           <tr>
             <td><input bind:value={line.name} /></td>
             <td><input type="number" step="0.01" bind:value={line.price} /></td>
+            <td><input type="number" step="0.01" bind:value={line.deposit} /></td>
             <td>
               <select bind:value={line.category}>
                 <option value={null}>—</option>

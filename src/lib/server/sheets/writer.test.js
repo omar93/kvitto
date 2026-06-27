@@ -56,6 +56,14 @@ describe('buildReceiptRows', () => {
   });
 });
 
+describe('buildReceiptRows with deposit', () => {
+  it('uses =SUM(price+pant) for an item that has a deposit', () => {
+    const r2 = { store: 'S', date: '2026-04-24', total: 15, items: [{ name: 'Cola', price: 13, deposit: 2, category: 'Läsk/Snäx' }] };
+    const out = buildReceiptRows({ receipt: r2, startRow: 2, tabName: 'T', sheetId: 1, location: '', card: '' });
+    expect(out.valueRange.values[1]).toEqual(['Cola', '=SUM(13+2)', '', 'Läsk/Snäx', '']);
+  });
+});
+
 describe('writeReceipt', () => {
   function sheetsWith(existingJ) {
     return {

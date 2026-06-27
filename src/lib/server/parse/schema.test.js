@@ -53,6 +53,20 @@ describe('validateReceipt', () => {
     expect(r.value.items[0].category).toBeNull();
   });
 
+  it('captures deposit (pant) per item, defaults to 0, and includes it in the total', () => {
+    const r = validateReceipt({
+      store: 'X', date: '2026-04-24',
+      items: [
+        { name: 'Cola', price: 13, deposit: 2, category: 'Läsk/Snäx' },
+        { name: 'Banan', price: 24.18, category: 'Mat' }
+      ]
+    });
+    expect(r.ok).toBe(true);
+    expect(r.value.items[0].deposit).toBe(2);
+    expect(r.value.items[1].deposit).toBe(0);
+    expect(r.value.total).toBeCloseTo(39.18, 2);
+  });
+
   it('rejects when store/date/items are missing or malformed', () => {
     expect(validateReceipt({}).ok).toBe(false);
     expect(validateReceipt({ ...good, date: '24/04/2026' }).ok).toBe(false);

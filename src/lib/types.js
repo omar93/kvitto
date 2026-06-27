@@ -1,7 +1,8 @@
 /**
  * @typedef {Object} ReceiptItem
  * @property {string} name
- * @property {number} price
+ * @property {number} price          // item price excluding deposit
+ * @property {number} deposit        // pant for this item (0 if none)
  * @property {string|null} category  // one of CATEGORIES, or null if unknown
  */
 

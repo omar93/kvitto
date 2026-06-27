@@ -42,7 +42,8 @@ export function validateReceipt(obj) {
       const price = coercePrice(it?.price);
       if (typeof it?.name !== 'string' || it.name.trim() === '') errors.push(`item ${i}: name missing`);
       if (price === null) errors.push(`item ${i}: price invalid`);
-      items.push({ name: cleanName(it?.name), price: price ?? 0, category: normCategory(it?.category) });
+      const deposit = coercePrice(it?.deposit) ?? 0;
+      items.push({ name: cleanName(it?.name), price: price ?? 0, deposit, category: normCategory(it?.category) });
     });
   }
 
@@ -54,7 +55,7 @@ export function validateReceipt(obj) {
     value: {
       store: cleanName(o.store),
       date: o.date,
-      total: total ?? items.reduce((s, it) => s + it.price, 0),
+      total: total ?? items.reduce((s, it) => s + it.price + it.deposit, 0),
       items
     }
   };
