@@ -1,5 +1,6 @@
 import { extractPdfText } from './extract/pdf.js';
 import { parseReceipt } from './parse/parse.js';
+import { parseReceiptText, normalizeDecimals } from './parse/parse-text.js';
 import { parseReceiptFromImage } from './parse/vision.js';
 import { applyCategories } from './categorize/categorize.js';
 import { CATEGORIES } from '../types.js';
@@ -19,6 +20,7 @@ function isPdf(item) {
  */
 export async function processReceipt(item, { settings, categories = CATEGORIES, deps = {} }) {
   const extractPdf = deps.extractPdfText || extractPdfText;
+  const parseTextDet = deps.parseReceiptText || parseReceiptText;
   const parseText = deps.parseReceipt || parseReceipt;
   const parseImage = deps.parseReceiptFromImage || parseReceiptFromImage;
   const apply = deps.applyCategories || applyCategories;
@@ -34,8 +36,16 @@ export async function processReceipt(item, { settings, categories = CATEGORIES, 
       if (text.replace(/\s/g, '').length < MIN_PDF_TEXT) {
         throw new Error('PDF has no usable text layer (image-only PDF needs a screenshot instead)');
       }
-      parsed = await parseText(text, { host, model, categories });
-      source = 'pdf';
+      // Prefer the exact deterministic parser for the structured self-scan layout;
+      // fall back to the LLM (with comma->dot numbers) for other formats.
+      const det = parseTextDet(text);
+      if (det) {
+        parsed = det;
+        source = 'pdf-parser';
+      } else {
+        parsed = await parseText(normalizeDecimals(text), { host, model, categories });
+        source = 'pdf';
+      }
     } else {
       parsed = await parseImage(item.buffer, { host, model: visionModel, categories });
       source = 'vision';
