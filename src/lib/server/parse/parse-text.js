@@ -125,10 +125,11 @@ export function parseReceiptText(rawText) {
 
   if (items.length < 2) return null;
 
+  const computed = items.reduce((acc, it) => acc + (it.price * it.quantity - it.discount + it.deposit), 0);
   return {
     store: firstStore(allLines),
     date: findDate(rawText),
-    total: totalAmount(allLines) ?? items.reduce((acc, it) => acc + (it.price * it.quantity - it.discount + it.deposit * it.quantity), 0),
+    total: totalAmount(allLines) ?? Math.round(computed * 100) / 100,
     items
   };
 }

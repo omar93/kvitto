@@ -1,0 +1,143 @@
+{
+  "store": "Port 73 Haninge",
+  "date": "2026-06-26",
+  "total": 720.03,
+  "items": [
+    {
+      "discount": 0,
+      "deposit": 0,
+      "quantity": 1,
+      "category": null,
+      "name": "KASSE VIT/RÖD FLG",
+      "price": 10
+    },
+    {
+      "discount": 0,
+      "deposit": 0,
+      "quantity": 1,
+      "category": null,
+      "name": "LÖK RÖD 1KG",
+      "price": 13.9
+    },
+    {
+      "discount": 5,
+      "deposit": 0,
+      "quantity": 1,
+      "category": null,
+      "name": "ROMANSALLAD",
+      "price": 14.9
+    },
+    {
+      "discount": 0,
+      "deposit": 0,
+      "quantity": 2,
+      "category": null,
+      "name": "GURKA SVERIGE ST",
+      "price": 14.9
+    },
+    {
+      "discount": 0,
+      "deposit": 0,
+      "quantity": 1,
+      "category": null,
+      "name": "ÄPPLE JONAGOLD",
+      "price": 27.1
+    },
+    {
+      "discount": 22.77,
+      "deposit": 0,
+      "quantity": 1.002,
+      "category": null,
+      "name": "KYCKLINGBRÖSTFILÉ",
+      "price": 112.62
+    },
+    {
+      "discount": 10,
+      "deposit": 0,
+      "quantity": 1,
+      "category": null,
+      "name": "NÖTFÄRS IMP",
+      "price": 99.9
+    },
+    {
+      "discount": 0,
+      "deposit": 0,
+      "quantity": 1,
+      "category": null,
+      "name": "YOGH KVARG VANILJ",
+      "price": 23.9
+    },
+    {
+      "discount": 0,
+      "deposit": 0,
+      "quantity": 1,
+      "category": null,
+      "name": "HALLONKVARG U/SOCK",
+      "price": 22.9
+    },
+    {
+      "discount": 0,
+      "deposit": 6,
+      "quantity": 3,
+      "category": null,
+      "name": "COLA SOCKERFRI 2L",
+      "price": 13.15
+    },
+    {
+      "discount": 0,
+      "deposit": 0,
+      "quantity": 2,
+      "category": null,
+      "name": "TANDBORSTE",
+      "price": 27.9
+    },
+    {
+      "discount": 0,
+      "deposit": 0,
+      "quantity": 1,
+      "category": null,
+      "name": "COMPLETE TANDKRÄM",
+      "price": 16.9
+    },
+    {
+      "discount": 0,
+      "deposit": 0,
+      "quantity": 1,
+      "category": null,
+      "name": "TANDTRÅDSBYGEL",
+      "price": 39.9
+    },
+    {
+      "discount": 0,
+      "deposit": 0,
+      "quantity": 1,
+      "category": null,
+      "name": "DISKBORSTE GREPP",
+      "price": 19.9
+    },
+    {
+      "discount": 0,
+      "deposit": 0,
+      "quantity": 1,
+      "category": null,
+      "name": "POWER INOX",
+      "price": 26.9
+    },
+    {
+      "discount": 0,
+      "deposit": 0,
+      "quantity": 1,
+      "category": null,
+      "name": "TVÅLULL 100G",
+      "price": 19.9
+    },
+    {
+      "discount": 0,
+      "deposit": 0,
+      "quantity": 2,
+      "category": null,
+      "name": "KEBABSKAV 750G",
+      "price": 88.9
+    }
+  ]
+}

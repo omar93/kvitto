@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "cli": "node cli.js"
+    "cli": "node cli.js",
+    "parse": "node scripts/parse-receipt.js"
   },
   "dependencies": {
     "@sveltejs/adapter-node": "^5.5.7",
