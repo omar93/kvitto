@@ -1,9 +1,9 @@
 /**
  * @typedef {Object} ReceiptItem
  * @property {string} name
- * @property {number} price          // ordinary unit price (before any discount), excluding deposit
- * @property {number} discount       // per-unit reduction from a sale/campaign (0 if none)
- * @property {number} quantity       // number of units bought (1 if not printed)
+ * @property {number} price          // unit price (or price per kg for weight items), excluding deposit
+ * @property {number} discount       // flat amount removed from the whole line (0 if none)
+ * @property {number} quantity       // units bought, or weight in kg for weight items (1 if not printed)
  * @property {number} deposit        // pant per unit (0 if none)
  * @property {string|null} category  // one of CATEGORIES, or null if unknown
  */

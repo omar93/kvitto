@@ -74,16 +74,24 @@ describe('itemPriceCell', () => {
     expect(itemPriceCell({ price: 13, deposit: 2 })).toBe('=SUM(13+2)');
   });
 
-  it('subtracts a discount: =SUM(price-discount)', () => {
-    expect(itemPriceCell({ price: 100, discount: 20 })).toBe('=SUM(100-20)');
+  it('subtracts a flat line discount', () => {
+    expect(itemPriceCell({ price: 14.9, discount: 5 })).toBe('=SUM(14.9-5)');
   });
 
   it('multiplies by quantity', () => {
-    expect(itemPriceCell({ price: 15, quantity: 4 })).toBe('=SUM(15*4)');
+    expect(itemPriceCell({ price: 14.9, quantity: 2 })).toBe('=SUM(14.9*2)');
   });
 
-  it('combines discount, quantity and pant per the receipt layout', () => {
-    expect(itemPriceCell({ price: 15, discount: 2, quantity: 4, deposit: 2 })).toBe('=SUM(((15-2)*4)+2*4)');
+  it('handles a weight item with a flat discount', () => {
+    expect(itemPriceCell({ price: 112.62, quantity: 1.002, discount: 22.77 })).toBe('=SUM(112.62*1.002-22.77)');
+  });
+
+  it('folds pant into a multi-quantity item (cola 3-pack)', () => {
+    expect(itemPriceCell({ price: 13.15, quantity: 3, deposit: 2 })).toBe('=SUM((13.15*3)+2*3)');
+  });
+
+  it('combines quantity, flat discount and pant', () => {
+    expect(itemPriceCell({ price: 15, quantity: 4, discount: 2, deposit: 2 })).toBe('=SUM((15*4-2)+2*4)');
   });
 });
 

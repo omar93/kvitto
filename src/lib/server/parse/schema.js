@@ -18,17 +18,16 @@ function normCategory(c, categories) {
   return categories.includes(c) ? c : null;
 }
 
-/** Coerce a quantity to a positive integer; null if it can't be read. */
+/** Coerce a quantity to a positive number (fractional allowed for weight); null if unreadable. */
 export function coerceQty(v) {
   const n = coercePrice(v);
   if (n === null) return null;
-  const i = Math.round(n);
-  return i >= 1 ? i : null;
+  return n > 0 ? n : null;
 }
 
-/** Total contributed by one item: (price - discount) * qty + deposit * qty. */
+/** Total contributed by one item: price * qty - discount + deposit * qty. */
 export function lineTotal(it) {
-  return (it.price - it.discount) * it.quantity + it.deposit * it.quantity;
+  return it.price * it.quantity - it.discount + it.deposit * it.quantity;
 }
 
 /** Strip a leading formula trigger (= + @) so Sheets treats the name as text. */

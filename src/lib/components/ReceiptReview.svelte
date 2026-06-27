@@ -77,7 +77,7 @@
         {#each receipt.items as line}
           <tr>
             <td><input bind:value={line.name} /></td>
-            <td class="num"><input type="number" step="1" min="1" bind:value={line.quantity} /></td>
+            <td class="num"><input type="number" step="any" min="0" bind:value={line.quantity} /></td>
             <td class="num"><input type="number" step="0.01" bind:value={line.price} /></td>
             <td class="num"><input type="number" step="0.01" bind:value={line.discount} /></td>
             <td class="num"><input type="number" step="0.01" bind:value={line.deposit} /></td>

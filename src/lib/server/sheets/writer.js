@@ -7,28 +7,32 @@ const COL_N_END = 14;
 const BLACK = { red: 0, green: 0, blue: 0 };
 
 /**
- * The K-cell for one item, as a formula a human can inspect.
- *   price 24.18, no discount/pant/qty           -> 24.18            (plain number)
- *   price 100, discount 20                        -> =SUM(100-20)
- *   price 13, pant 2                              -> =SUM(13+2)
- *   price 15, discount 2, qty 4, pant 2          -> =SUM(((15-2)*4)+2*4)
+ * The K-cell for one item, as a formula a human can inspect. Discount is a flat
+ * amount removed from the whole line; quantity multiplies; pant is added per unit.
+ *   price 24.18                                  -> 24.18                       (plain)
+ *   price 14.9, discount 5                       -> =SUM(14.9-5)
+ *   price 14.9, qty 2                            -> =SUM(14.9*2)
+ *   price 112.62, qty 1.002 (kg), discount 22.77 -> =SUM(112.62*1.002-22.77)
+ *   price 13, pant 2                             -> =SUM(13+2)
+ *   price 13.15, qty 3, pant 2                   -> =SUM((13.15*3)+2*3)
  */
 export function itemPriceCell(it) {
   const p = it.price;
   const d = it.discount > 0 ? it.discount : 0;
   const pant = it.deposit > 0 ? it.deposit : 0;
-  const q = Number.isInteger(it.quantity) && it.quantity > 1 ? it.quantity : 1;
+  const q = it.quantity != null && it.quantity > 0 ? it.quantity : 1;
+  const multi = q !== 1;
 
   // Nothing to compute: keep a plain number so simple cells stay clean.
-  if (d === 0 && pant === 0 && q === 1) return p;
+  if (d === 0 && pant === 0 && !multi) return p;
 
-  // Goods term: (price - discount), times quantity.
-  const unit = d > 0 ? `${p}-${d}` : `${p}`;
-  const goods = q > 1 ? `${d > 0 ? `(${p}-${d})` : `${p}`}*${q}` : unit;
+  // Goods term: price [* qty] [- discount].
+  let goods = multi ? `${p}*${q}` : `${p}`;
+  if (d > 0) goods = `${goods}-${d}`;
 
   if (pant === 0) return `=SUM(${goods})`;
 
-  const pantTerm = q > 1 ? `${pant}*${q}` : `${pant}`;
+  const pantTerm = multi ? `${pant}*${q}` : `${pant}`;
   const goodsWrapped = /[-+*/]/.test(goods) ? `(${goods})` : goods;
   return `=SUM(${goodsWrapped}+${pantTerm})`;
 }

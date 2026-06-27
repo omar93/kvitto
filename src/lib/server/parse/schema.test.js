@@ -67,19 +67,19 @@ describe('validateReceipt', () => {
     expect(r.value.total).toBeCloseTo(39.18, 2);
   });
 
-  it('captures discount + quantity (defaults 0 and 1) and reflects them in the total', () => {
+  it('captures flat discount + fractional quantity (defaults 0 and 1) and reflects them in the total', () => {
     const r = validateReceipt({
       store: 'X', date: '2026-04-24',
       items: [
-        { name: 'Läsk -R', price: 15, discount: 2, quantity: 4, deposit: 2, category: 'Läsk/Snäx' },
+        { name: 'Kyckling -R', price: 112.62, quantity: 1.002, discount: 22.77, category: 'Mat' },
         { name: 'Banan', price: 24.18, category: 'Mat' }
       ]
     });
     expect(r.ok).toBe(true);
-    expect(r.value.items[0]).toMatchObject({ discount: 2, quantity: 4, deposit: 2 });
+    expect(r.value.items[0]).toMatchObject({ discount: 22.77, quantity: 1.002, deposit: 0 });
     expect(r.value.items[1]).toMatchObject({ discount: 0, quantity: 1, deposit: 0 });
-    // (15-2)*4 + 2*4 = 60, plus 24.18
-    expect(r.value.total).toBeCloseTo(84.18, 2);
+    // 112.62*1.002 - 22.77 = 90.075, plus 24.18
+    expect(r.value.total).toBeCloseTo(114.26, 1);
   });
 
   it('rejects when store/date/items are missing or malformed', () => {
