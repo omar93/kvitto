@@ -47,9 +47,16 @@
     e.preventDefault(); dragOver = false;
     uploadFiles([...(e.dataTransfer?.files ?? [])]);
   }
+
+  // Re-fetch categories and tabs when returning to the app (e.g. after editing
+  // the sheet in another tab), so the dropdowns reflect the latest sheet state.
+  async function onWindowFocus() {
+    try { categories = await api.categories(); } catch { /* keep current */ }
+    try { tabs = await api.tabs(); } catch { /* keep current */ }
+  }
 </script>
 
-<svelte:window on:paste={onPaste} />
+<svelte:window on:paste={onPaste} on:focus={onWindowFocus} />
 
 <div
   class="dropzone" class:over={dragOver}

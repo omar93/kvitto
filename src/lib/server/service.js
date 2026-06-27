@@ -40,15 +40,14 @@ export function createService(config) {
     };
   }
 
-  // Category list comes from the sheet's data validation (column M), cached after
-  // the first successful fetch; falls back to the built-in list.
-  let cachedCategories = null;
+  // Category list comes from the sheet's data validation (column M), fetched fresh
+  // each time so edits made in the sheet are picked up without a restart; falls
+  // back to the built-in list.
   async function getCategories() {
-    if (cachedCategories) return cachedCategories;
     const cfg = await sheetConfig();
     try {
       const list = await getCategoriesFromSheet(sheets(), cfg.spreadsheetId, cfg.templateTab);
-      if (list && list.length) { cachedCategories = list; return list; }
+      if (list && list.length) return list;
     } catch { /* fall through to the built-in list */ }
     return CATEGORIES;
   }
