@@ -65,9 +65,9 @@ describe('parseReceiptText', () => {
     expect(byName('KYCKLING')).toMatchObject({ price: 112.62, quantity: 1.002, discount: 22.77 });
   });
 
-  it('folds pant into the item above without adding a row', () => {
+  it('adds the pant line total to the item above without adding a row', () => {
     const cola = byName('COLA');
-    expect(cola).toMatchObject({ price: 13.15, quantity: 3, deposit: 2, discount: 0 });
+    expect(cola).toMatchObject({ price: 13.15, quantity: 3, deposit: 6, discount: 0 });
     expect(r.items.filter((it) => /pant/i.test(it.name))).toHaveLength(0);
   });
 

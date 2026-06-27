@@ -25,9 +25,9 @@ export function coerceQty(v) {
   return n > 0 ? n : null;
 }
 
-/** Total contributed by one item: price * qty - discount + deposit * qty. */
+/** Total contributed by one item: price * qty - discount + deposit (flat modifiers). */
 export function lineTotal(it) {
-  return it.price * it.quantity - it.discount + it.deposit * it.quantity;
+  return it.price * it.quantity - it.discount + it.deposit;
 }
 
 /** Strip a leading formula trigger (= + @) so Sheets treats the name as text. */

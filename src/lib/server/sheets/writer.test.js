@@ -82,16 +82,16 @@ describe('itemPriceCell', () => {
     expect(itemPriceCell({ price: 14.9, quantity: 2 })).toBe('=SUM(14.9*2)');
   });
 
-  it('handles a weight item with a flat discount', () => {
+  it('handles a weight item with a discount modifier', () => {
     expect(itemPriceCell({ price: 112.62, quantity: 1.002, discount: 22.77 })).toBe('=SUM(112.62*1.002-22.77)');
   });
 
-  it('folds pant into a multi-quantity item (cola 3-pack)', () => {
-    expect(itemPriceCell({ price: 13.15, quantity: 3, deposit: 2 })).toBe('=SUM((13.15*3)+2*3)');
+  it('adds the pant line total to a multi-quantity item (cola 3-pack)', () => {
+    expect(itemPriceCell({ price: 13.15, quantity: 3, deposit: 6 })).toBe('=SUM(13.15*3+6)');
   });
 
-  it('combines quantity, flat discount and pant', () => {
-    expect(itemPriceCell({ price: 15, quantity: 4, discount: 2, deposit: 2 })).toBe('=SUM((15*4-2)+2*4)');
+  it('combines quantity, discount and pant modifiers', () => {
+    expect(itemPriceCell({ price: 15, quantity: 4, discount: 8, deposit: 6 })).toBe('=SUM(15*4-8+6)');
   });
 });
 

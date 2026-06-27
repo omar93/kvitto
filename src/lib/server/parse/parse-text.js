@@ -94,26 +94,15 @@ export function parseReceiptText(rawText) {
 
     const amt = trailingAmount(s);
 
-    // Discount sub-line (negative amount) belongs to the item above.
+    // An indented modifier line belongs to the item above; its SIGN decides:
+    //   negative -> discount (subtract),  positive pant line -> deposit (add).
+    // We use the line's own total, so no per-unit maths is needed.
     if (amt != null && amt < 0) {
       if (last()) last().discount += Math.abs(amt);
       continue;
     }
-
-    // Pant sub-line: "+PANT ENG PET >1L  3st*2,00  6,00" -> fold into the item above.
-    if (/pant/i.test(s)) {
-      const item = last();
-      if (item) {
-        const c = s.match(COUNT_RE);
-        if (c) {
-          const unit = coercePrice(c[2]);
-          if (unit != null) item.deposit = unit;
-          const n = Number(c[1]);
-          if (n > 1) item.quantity = Math.max(item.quantity, n);
-        } else if (amt != null && item.quantity) {
-          item.deposit = amt / item.quantity;
-        }
-      }
+    if (amt != null && amt > 0 && /pant/i.test(s)) {
+      if (last()) last().deposit += amt;
       continue;
     }
 

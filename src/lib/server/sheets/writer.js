@@ -7,14 +7,15 @@ const COL_N_END = 14;
 const BLACK = { red: 0, green: 0, blue: 0 };
 
 /**
- * The K-cell for one item, as a formula a human can inspect. Discount is a flat
- * amount removed from the whole line; quantity multiplies; pant is added per unit.
- *   price 24.18                                  -> 24.18                       (plain)
+ * The K-cell for one item, as a formula a human can inspect. The base is the
+ * unit price (times quantity/weight), then each modifier from an indented line
+ * is applied by its sign: discount subtracted, pant added (both flat line totals).
+ *   price 24.18                                  -> 24.18                  (plain)
  *   price 14.9, discount 5                       -> =SUM(14.9-5)
  *   price 14.9, qty 2                            -> =SUM(14.9*2)
  *   price 112.62, qty 1.002 (kg), discount 22.77 -> =SUM(112.62*1.002-22.77)
  *   price 13, pant 2                             -> =SUM(13+2)
- *   price 13.15, qty 3, pant 2                   -> =SUM((13.15*3)+2*3)
+ *   price 13.15, qty 3, pant 6                   -> =SUM(13.15*3+6)
  */
 export function itemPriceCell(it) {
   const p = it.price;
@@ -26,15 +27,10 @@ export function itemPriceCell(it) {
   // Nothing to compute: keep a plain number so simple cells stay clean.
   if (d === 0 && pant === 0 && !multi) return p;
 
-  // Goods term: price [* qty] [- discount].
-  let goods = multi ? `${p}*${q}` : `${p}`;
-  if (d > 0) goods = `${goods}-${d}`;
-
-  if (pant === 0) return `=SUM(${goods})`;
-
-  const pantTerm = multi ? `${pant}*${q}` : `${pant}`;
-  const goodsWrapped = /[-+*/]/.test(goods) ? `(${goods})` : goods;
-  return `=SUM(${goodsWrapped}+${pantTerm})`;
+  let expr = multi ? `${p}*${q}` : `${p}`;
+  if (d > 0) expr += `-${d}`;
+  if (pant > 0) expr += `+${pant}`;
+  return `=SUM(${expr})`;
 }
 
 export async function findNextRow(sheets, spreadsheetId, tabName) {
