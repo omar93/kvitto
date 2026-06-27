@@ -34,7 +34,8 @@
 
     <h3>Ollama</h3>
     <label>Host <input bind:value={s.ollama.host} /></label>
-    <label>Modell <input bind:value={s.ollama.model} /></label>
+    <label>Text-modell (PDF) <input bind:value={s.ollama.model} /></label>
+    <label>Vision-modell (screenshots) <input bind:value={s.ollama.visionModel} /></label>
 
     <h3>Bevakad mapp</h3>
     <label>Sökväg <input bind:value={s.watchFolder} placeholder="t.ex. C:\\Users\\omar\\kvitton" /></label>

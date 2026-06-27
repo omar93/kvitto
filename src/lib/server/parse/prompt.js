@@ -1,8 +1,8 @@
 import { CATEGORIES } from '../../types.js';
 
-export function buildPrompt(rawText, categories = CATEGORIES) {
+// Shared extraction rules, used by both the text prompt and the vision prompt.
+function instructions(categories) {
   return [
-    'You extract structured data from a Swedish grocery store receipt.',
     'Return ONLY a JSON object with this exact shape:',
     '{',
     '  "store": string,            // store name, e.g. "Willys - Port73"',
@@ -25,9 +25,25 @@ export function buildPrompt(rawText, categories = CATEGORIES) {
     'Examples:',
     '  no deposit:  { "name": "Banan", "price": 24.18, "deposit": 0, "category": "Mat" }',
     '  with pant:   { "name": "Cola", "price": 13.00, "deposit": 2.00, "category": "Läsk/Snäx" }',
-    'Output JSON only, no prose.',
+    'Output JSON only, no prose.'
+  ];
+}
+
+export function buildPrompt(rawText, categories = CATEGORIES) {
+  return [
+    'You extract structured data from a Swedish grocery store receipt.',
+    ...instructions(categories),
     '',
     'RECEIPT TEXT:',
     rawText
+  ].join('\n');
+}
+
+export function buildVisionPrompt(categories = CATEGORIES) {
+  return [
+    'You read a photo or screenshot of a Swedish grocery store receipt and extract its data.',
+    ...instructions(categories),
+    '',
+    'Read every product line from the image carefully, column by column.'
   ].join('\n');
 }

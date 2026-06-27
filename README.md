@@ -39,8 +39,8 @@ override the store-row dropdowns.
 ## Architecture
 Single-responsibility modules under `src/lib/server/`:
 - `period/` — pay-period (25th rule) → tab name `YYYY-MM/MM`
-- `extract/` — PDF text (unpdf) and image OCR (tesseract.js), with a dispatcher
-- `parse/` — receipt schema + Ollama-based text → `ReceiptData`
+- `extract/` — PDF text via unpdf (tesseract OCR kept as a fallback helper)
+- `parse/` — receipt schema, text → `ReceiptData` (PDF) and image → `ReceiptData` via an Ollama vision model (screenshots)
 - `categorize/` — category resolution with learned overrides
 - `settings/` — JSON config (confirmation toggles, last-used values, learned categories)
 - `sheets/` — service-account client, tab resolve/create from template, row + border writer
@@ -55,6 +55,11 @@ npm run dev      # open the printed URL
 - Nothing is written to the sheet until you click **Skriv till Sheet**.
 - Set `GOOGLE_APPLICATION_CREDENTIALS` (default `credentials.json`), `KVITTO_SPREADSHEET_ID`,
   and `KVITTO_TEMPLATE_TAB` (default `Mall`) in the environment, or via Settings.
+
+### Models
+- PDFs use the text model (default `llama3.1:8b`).
+- Screenshots use a **vision** model (default `llama3.2-vision`) — pull it first:
+  `ollama pull llama3.2-vision` (or set another in Settings → Vision-modell, e.g. `minicpm-v`).
 
 ## Tests
 ```bash
