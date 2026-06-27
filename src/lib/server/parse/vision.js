@@ -1,5 +1,6 @@
 import { buildVisionPrompt } from './prompt.js';
 import { validateReceipt } from './schema.js';
+import { ollamaError } from './ollama-error.js';
 
 /**
  * Parse a receipt image directly with a local Ollama vision model (no OCR step).
@@ -24,7 +25,7 @@ export async function parseReceiptFromImage(buffer, opts) {
         format: 'json'
       })
     });
-    if (!res.ok) throw new Error(`Ollama HTTP ${res.status}`);
+    if (!res.ok) throw new Error(await ollamaError(res));
     const data = await res.json();
     let obj;
     try {

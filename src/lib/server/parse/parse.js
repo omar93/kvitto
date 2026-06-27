@@ -1,5 +1,6 @@
 import { buildPrompt } from './prompt.js';
 import { validateReceipt } from './schema.js';
+import { ollamaError } from './ollama-error.js';
 
 export { buildPrompt };
 
@@ -9,7 +10,7 @@ async function callOllama(rawText, { host, model, categories, fetchImpl }) {
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({ model, prompt: buildPrompt(rawText, categories), stream: false, format: 'json' })
   });
-  if (!res.ok) throw new Error(`Ollama HTTP ${res.status}`);
+  if (!res.ok) throw new Error(await ollamaError(res));
   const data = await res.json();
   return data.response;
 }
