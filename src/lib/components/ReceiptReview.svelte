@@ -101,6 +101,10 @@
         </tbody>
       </table>
     {/if}
+
+    {#if item.text}
+      <details class="ocr"><summary>Rå OCR-text (felsökning)</summary><pre>{item.text}</pre></details>
+    {/if}
   </div>
 {/if}
 
@@ -113,4 +117,6 @@
   td, th { border: 1px solid #eee; padding: 4px; text-align: left; }
   .actions { display: flex; gap: 8px; margin-top: 8px; }
   .msg { color: #2b6cb0; }
+  .ocr { margin-top: 10px; color: #555; }
+  .ocr pre { white-space: pre-wrap; background: #f3f4f6; padding: 8px; border-radius: 6px; font-size: 12px; }
 </style>
