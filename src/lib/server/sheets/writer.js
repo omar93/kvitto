@@ -24,8 +24,11 @@ export function buildReceiptRows({ receipt, startRow, tabName, sheetId, location
   const firstItemRow = startRow + 1;
   const lastItemRow = startRow + receipt.items.length;
 
-  const storeRow = [receipt.store, `=SUM(K${firstItemRow}:K${lastItemRow})`, receipt.date, location, card];
-  const itemRows = receipt.items.map((it) => [it.name, it.price, '', it.category ?? '', '']);
+  // Safety net: a name starting with = + @ would be parsed as a formula by Sheets.
+  const safeText = (s) => (typeof s === 'string' ? s.replace(/^\s*[=+@]+\s*/, '') : s);
+
+  const storeRow = [safeText(receipt.store), `=SUM(K${firstItemRow}:K${lastItemRow})`, receipt.date, location, card];
+  const itemRows = receipt.items.map((it) => [safeText(it.name), it.price, '', it.category ?? '', '']);
 
   const bottomBorder = (row, style) => ({
     updateBorders: {

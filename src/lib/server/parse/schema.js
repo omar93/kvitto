@@ -18,6 +18,11 @@ function normCategory(c) {
   return CATEGORIES.includes(c) ? c : null;
 }
 
+/** Strip a leading formula trigger (= + @) so Sheets treats the name as text. */
+export function cleanName(s) {
+  return String(s ?? '').replace(/^\s*[=+@]+\s*/, '').trim();
+}
+
 /**
  * @param {unknown} obj
  * @returns {{ok: true, value: import('../../types.js').ReceiptData} | {ok: false, errors: string[]}}
@@ -37,7 +42,7 @@ export function validateReceipt(obj) {
       const price = coercePrice(it?.price);
       if (typeof it?.name !== 'string' || it.name.trim() === '') errors.push(`item ${i}: name missing`);
       if (price === null) errors.push(`item ${i}: price invalid`);
-      items.push({ name: String(it?.name ?? '').trim(), price: price ?? 0, category: normCategory(it?.category) });
+      items.push({ name: cleanName(it?.name), price: price ?? 0, category: normCategory(it?.category) });
     });
   }
 
@@ -47,7 +52,7 @@ export function validateReceipt(obj) {
   return {
     ok: true,
     value: {
-      store: o.store.trim(),
+      store: cleanName(o.store),
       date: o.date,
       total: total ?? items.reduce((s, it) => s + it.price, 0),
       items

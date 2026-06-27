@@ -1,5 +1,14 @@
 import { describe, it, expect } from 'vitest';
-import { validateReceipt, coercePrice } from './schema.js';
+import { validateReceipt, coercePrice, cleanName } from './schema.js';
+
+describe('cleanName', () => {
+  it('strips a leading formula trigger', () => {
+    expect(cleanName('=pant')).toBe('pant');
+    expect(cleanName('  =  Pant')).toBe('Pant');
+    expect(cleanName('+rabatt')).toBe('rabatt');
+    expect(cleanName('Mjölk 0,5%')).toBe('Mjölk 0,5%');
+  });
+});
 
 describe('coercePrice', () => {
   it('parses Swedish formatted prices', () => {
