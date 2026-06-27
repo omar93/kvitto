@@ -66,11 +66,38 @@ export function createService(config) {
         tab: tabNameForDate(now())
       }
     });
+    // Express mode: write straight to the sheet without manual review.
+    if (settings.autoCommit && queue.get(item.id).status === 'ready') {
+      try {
+        await commit(item.id);
+      } catch (err) {
+        queue.update(item.id, { error: `auto-commit: ${err.message}` });
+      }
+    }
     return publicItem(queue.get(item.id));
+  }
+
+  async function commit(id) {
+    const it = queue.get(id);
+    const { location, card, tab } = it.meta;
+    const cfg = await sheetConfig();
+    const result = await write(sheets(), cfg.spreadsheetId, it.receipt, {
+      tabName: tab, location, card, templateTab: cfg.templateTab, create: true, dryRun: false
+    });
+    const settings = await getSettings();
+    const categories = await getCategories();
+    let learned = settings.learnedCategories;
+    for (const line of it.receipt.items) {
+      if (line.category) learned = recordCorrection(learned, line.name, line.category, categories);
+    }
+    await updateSettingsFn(settingsPath, { learnedCategories: learned, lastUsed: { location, card } });
+    queue.update(id, { status: 'committed' });
+    return result;
   }
 
   return {
     ingest,
+    commit,
     listPublic: () => queue.list().map(publicItem),
     getPublic: (id) => publicItem(queue.get(id)),
     update: (id, patch) => publicItem(queue.update(id, patch)),
@@ -83,24 +110,6 @@ export function createService(config) {
       const result = await write(sheets(), cfg.spreadsheetId, it.receipt, {
         tabName: tab, location, card, templateTab: cfg.templateTab, create: true, dryRun: true
       });
-      return result;
-    },
-
-    async commit(id) {
-      const it = queue.get(id);
-      const { location, card, tab } = it.meta;
-      const cfg = await sheetConfig();
-      const result = await write(sheets(), cfg.spreadsheetId, it.receipt, {
-        tabName: tab, location, card, templateTab: cfg.templateTab, create: true, dryRun: false
-      });
-      const settings = await getSettings();
-      const categories = await getCategories();
-      let learned = settings.learnedCategories;
-      for (const line of it.receipt.items) {
-        if (line.category) learned = recordCorrection(learned, line.name, line.category, categories);
-      }
-      await updateSettingsFn(settingsPath, { learnedCategories: learned, lastUsed: { location, card } });
-      queue.update(id, { status: 'committed' });
       return result;
     },
 

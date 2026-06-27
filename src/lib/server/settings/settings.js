@@ -4,6 +4,7 @@ import { dirname } from 'node:path';
 export function getDefaultSettings() {
   return {
     confirmations: { tab: true, category: true, storeMeta: true, finalSave: true },
+    autoCommit: false,
     lastUsed: { location: '', card: '' },
     learnedCategories: {},
     sheet: { spreadsheetId: '', templateTab: '' },

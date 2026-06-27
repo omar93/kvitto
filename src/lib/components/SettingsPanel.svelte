@@ -16,7 +16,10 @@
 
 {#if s}
   <div class="panel">
-    <h3>Bekräftelser (stäng av för express-läge)</h3>
+    <h3>Auto-skriv (express)</h3>
+    <label><input type="checkbox" bind:checked={s.autoCommit} /> Skriv kvitton direkt till Sheet utan granskning</label>
+
+    <h3>Bekräftelser</h3>
     {#each Object.keys(s.confirmations) as key}
       <label><input type="checkbox" bind:checked={s.confirmations[key]} /> {key}</label>
     {/each}

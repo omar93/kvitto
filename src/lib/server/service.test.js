@@ -72,6 +72,28 @@ describe('sheet config precedence', () => {
   });
 });
 
+describe('service.ingest auto-commit', () => {
+  it('writes immediately when autoCommit is enabled', async () => {
+    const writeReceipt = vi.fn().mockResolvedValue({ applied: true, plan: {} });
+    const svc = createService(baseConfig({ writeReceipt }));
+    await svc.updateSettings({ autoCommit: true, lastUsed: { location: 'Stockholm', card: 'Skandia' } });
+    const item = await svc.ingest({ buffer: Buffer.from('x'), filename: 'k.pdf', mimetype: 'application/pdf', source: 'upload' });
+    expect(writeReceipt).toHaveBeenCalledWith(
+      { __sheets: true }, 'SID', readyReceipt, expect.objectContaining({ dryRun: false })
+    );
+    expect(item.status).toBe('committed');
+    expect(svc.getPublic(item.id).status).toBe('committed');
+  });
+
+  it('does not write when autoCommit is off', async () => {
+    const writeReceipt = vi.fn().mockResolvedValue({ applied: true, plan: {} });
+    const svc = createService(baseConfig({ writeReceipt }));
+    const item = await svc.ingest({ buffer: Buffer.from('x'), filename: 'k.pdf', mimetype: 'application/pdf', source: 'upload' });
+    expect(writeReceipt).not.toHaveBeenCalled();
+    expect(item.status).toBe('ready');
+  });
+});
+
 describe('service.preview', () => {
   it('calls writeReceipt with dryRun true', async () => {
     const writeReceipt = vi.fn().mockResolvedValue({ applied: false, plan: { valueRange: { range: 'X' } } });
