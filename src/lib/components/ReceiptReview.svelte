@@ -2,17 +2,25 @@
   import { CATEGORIES, api } from '$lib/client/api.js';
   let { item, tabs, onchange } = $props();
 
-  let receipt = $state(structuredClone(item.receipt));
-  let meta = $state(structuredClone(item.meta));
+  // $state.snapshot unwraps Svelte's reactive proxy into a plain object
+  // (structuredClone throws on the proxy).
+  let receipt = $state($state.snapshot(item.receipt));
+  let meta = $state($state.snapshot(item.meta));
   let preview = $state(null);
   let busy = $state(false);
   let message = $state('');
 
+  // Only reload the editable copy when a *different* receipt is selected — not on
+  // every poll refresh (which would wipe in-progress edits every 2s).
+  let loadedId = item.id;
   $effect(() => {
-    receipt = structuredClone(item.receipt);
-    meta = structuredClone(item.meta);
-    preview = null;
-    message = '';
+    if (item.id !== loadedId) {
+      loadedId = item.id;
+      receipt = $state.snapshot(item.receipt);
+      meta = $state.snapshot(item.meta);
+      preview = null;
+      message = '';
+    }
   });
 
   async function save() {

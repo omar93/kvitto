@@ -36,10 +36,23 @@ describe('buildReceiptRows', () => {
       ['Mjölk 0,5%', 19.9, '', 'Mat', ''],
       ['Cola + pant', 19.15, '', 'Läsk/Snäx', '']
     ]);
-    expect(out.borderRequest.updateBorders.range).toEqual({
+
+    // bold on J:L of the store header row (row 5)
+    const bold = out.formatRequests.find((r) => r.repeatCell);
+    expect(bold.repeatCell.range).toEqual({
+      sheetId: 7, startRowIndex: 4, endRowIndex: 5, startColumnIndex: 9, endColumnIndex: 12
+    });
+    expect(bold.repeatCell.cell.userEnteredFormat.textFormat.bold).toBe(true);
+
+    // a thin line under the store header row, and a thick separator under the last item row
+    const borders = out.formatRequests.filter((r) => r.updateBorders);
+    const headerLine = borders.find((b) => b.updateBorders.range.startRowIndex === 4);
+    const separator = borders.find((b) => b.updateBorders.range.startRowIndex === 6);
+    expect(headerLine.updateBorders.bottom.style).toBe('SOLID');
+    expect(separator.updateBorders.bottom.style).toBe('SOLID_THICK');
+    expect(separator.updateBorders.range).toEqual({
       sheetId: 7, startRowIndex: 6, endRowIndex: 7, startColumnIndex: 9, endColumnIndex: 14
     });
-    expect(out.borderRequest.updateBorders.bottom.style).toBe('SOLID_THICK');
   });
 });
 

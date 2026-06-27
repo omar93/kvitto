@@ -2,7 +2,9 @@ import { resolveTab, findTab } from './tabs.js';
 
 // Column J is the 10th column (0-indexed 9); N is index 13 -> end-exclusive 14.
 const COL_J_INDEX = 9;
+const COL_L_END = 12; // J:L (name, sum, date) end-exclusive
 const COL_N_END = 14;
+const BLACK = { red: 0, green: 0, blue: 0 };
 
 export async function findNextRow(sheets, spreadsheetId, tabName) {
   const res = await sheets.spreadsheets.values.get({
@@ -25,6 +27,34 @@ export function buildReceiptRows({ receipt, startRow, tabName, sheetId, location
   const storeRow = [receipt.store, `=SUM(K${firstItemRow}:K${lastItemRow})`, receipt.date, location, card];
   const itemRows = receipt.items.map((it) => [it.name, it.price, '', it.category ?? '', '']);
 
+  const bottomBorder = (row, style) => ({
+    updateBorders: {
+      range: {
+        sheetId,
+        startRowIndex: row - 1,
+        endRowIndex: row,
+        startColumnIndex: COL_J_INDEX,
+        endColumnIndex: COL_N_END
+      },
+      bottom: { style, color: BLACK }
+    }
+  });
+
+  // Bold the store header row's name / sum / date (J:L).
+  const boldHeader = {
+    repeatCell: {
+      range: {
+        sheetId,
+        startRowIndex: startRow - 1,
+        endRowIndex: startRow,
+        startColumnIndex: COL_J_INDEX,
+        endColumnIndex: COL_L_END
+      },
+      cell: { userEnteredFormat: { textFormat: { bold: true } } },
+      fields: 'userEnteredFormat.textFormat.bold'
+    }
+  };
+
   return {
     startRow,
     lastItemRow,
@@ -32,18 +62,11 @@ export function buildReceiptRows({ receipt, startRow, tabName, sheetId, location
       range: `'${tabName}'!J${startRow}:N${lastItemRow}`,
       values: [storeRow, ...itemRows]
     },
-    borderRequest: {
-      updateBorders: {
-        range: {
-          sheetId,
-          startRowIndex: lastItemRow - 1,
-          endRowIndex: lastItemRow,
-          startColumnIndex: COL_J_INDEX,
-          endColumnIndex: COL_N_END
-        },
-        bottom: { style: 'SOLID_THICK', color: { red: 0, green: 0, blue: 0 } }
-      }
-    }
+    formatRequests: [
+      boldHeader,
+      bottomBorder(startRow, 'SOLID'), // line under the store header row
+      bottomBorder(lastItemRow, 'SOLID_THICK') // thick separator between purchases
+    ]
   };
 }
 
@@ -79,7 +102,7 @@ export async function writeReceipt(sheets, spreadsheetId, receipt, opts) {
   });
   await sheets.spreadsheets.batchUpdate({
     spreadsheetId,
-    requestBody: { requests: [plan.borderRequest] }
+    requestBody: { requests: plan.formatRequests }
   });
   return { plan, applied: true };
 }
