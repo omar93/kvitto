@@ -18,6 +18,19 @@ function normCategory(c, categories) {
   return categories.includes(c) ? c : null;
 }
 
+/** Coerce a quantity to a positive integer; null if it can't be read. */
+export function coerceQty(v) {
+  const n = coercePrice(v);
+  if (n === null) return null;
+  const i = Math.round(n);
+  return i >= 1 ? i : null;
+}
+
+/** Total contributed by one item: (price - discount) * qty + deposit * qty. */
+export function lineTotal(it) {
+  return (it.price - it.discount) * it.quantity + it.deposit * it.quantity;
+}
+
 /** Strip a leading formula trigger (= + @) so Sheets treats the name as text. */
 export function cleanName(s) {
   return String(s ?? '').replace(/^\s*[=+@]+\s*/, '').trim();
@@ -43,7 +56,16 @@ export function validateReceipt(obj, categories = CATEGORIES) {
       if (typeof it?.name !== 'string' || it.name.trim() === '') errors.push(`item ${i}: name missing`);
       if (price === null) errors.push(`item ${i}: price invalid`);
       const deposit = coercePrice(it?.deposit) ?? 0;
-      items.push({ name: cleanName(it?.name), price: price ?? 0, deposit, category: normCategory(it?.category, categories) });
+      const discount = coercePrice(it?.discount) ?? 0;
+      const quantity = coerceQty(it?.quantity) ?? 1;
+      items.push({
+        name: cleanName(it?.name),
+        price: price ?? 0,
+        discount,
+        quantity,
+        deposit,
+        category: normCategory(it?.category, categories)
+      });
     });
   }
 
@@ -55,7 +77,7 @@ export function validateReceipt(obj, categories = CATEGORIES) {
     value: {
       store: cleanName(o.store),
       date: o.date,
-      total: total ?? items.reduce((s, it) => s + it.price + it.deposit, 0),
+      total: total ?? items.reduce((s, it) => s + lineTotal(it), 0),
       items
     }
   };

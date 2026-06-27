@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { findNextRow, buildReceiptRows, writeReceipt } from './writer.js';
+import { findNextRow, buildReceiptRows, writeReceipt, itemPriceCell } from './writer.js';
 
 const receipt = {
   store: 'Willys - Port73',
@@ -61,6 +61,29 @@ describe('buildReceiptRows with deposit', () => {
     const r2 = { store: 'S', date: '2026-04-24', total: 15, items: [{ name: 'Cola', price: 13, deposit: 2, category: 'Läsk/Snäx' }] };
     const out = buildReceiptRows({ receipt: r2, startRow: 2, tabName: 'T', sheetId: 1, location: '', card: '' });
     expect(out.valueRange.values[1]).toEqual(['Cola', '=SUM(13+2)', '', 'Läsk/Snäx', '']);
+  });
+});
+
+describe('itemPriceCell', () => {
+  it('is a plain number when there is nothing to compute', () => {
+    expect(itemPriceCell({ price: 24.18 })).toBe(24.18);
+    expect(itemPriceCell({ price: 24.18, discount: 0, quantity: 1, deposit: 0 })).toBe(24.18);
+  });
+
+  it('keeps =SUM(price+pant) for deposit-only items', () => {
+    expect(itemPriceCell({ price: 13, deposit: 2 })).toBe('=SUM(13+2)');
+  });
+
+  it('subtracts a discount: =SUM(price-discount)', () => {
+    expect(itemPriceCell({ price: 100, discount: 20 })).toBe('=SUM(100-20)');
+  });
+
+  it('multiplies by quantity', () => {
+    expect(itemPriceCell({ price: 15, quantity: 4 })).toBe('=SUM(15*4)');
+  });
+
+  it('combines discount, quantity and pant per the receipt layout', () => {
+    expect(itemPriceCell({ price: 15, discount: 2, quantity: 4, deposit: 2 })).toBe('=SUM(((15-2)*4)+2*4)');
   });
 });
 
