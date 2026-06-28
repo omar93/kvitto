@@ -1,0 +1,119 @@
+{
+  "store": "Maxi ICA Stormarknad Haninge",
+  "date": "2026-06-22",
+  "total": 336.28,
+  "items": [
+    {
+      "name": "Bifftomat lv",
+      "price": 32.9,
+      "quantity": 0.372,
+      "discount": 0,
+      "deposit": 0,
+      "category": null
+    },
+    {
+      "name": "Extra Creamy",
+      "price": 52.9,
+      "quantity": 1,
+      "discount": 0,
+      "deposit": 0,
+      "category": null
+    },
+    {
+      "name": "Frig Inne Äggvita",
+      "price": 35.8,
+      "quantity": 1,
+      "discount": 0,
+      "deposit": 0,
+      "category": null
+    },
+    {
+      "name": "Gurka Haninge",
+      "price": 13.8,
+      "quantity": 2,
+      "discount": 6.3,
+      "deposit": 0,
+      "category": null
+    },
+    {
+      "name": "Kycklinginnerfilé",
+      "price": 49.9,
+      "quantity": 1,
+      "discount": 0,
+      "deposit": 0,
+      "category": null
+    },
+    {
+      "name": "LF Lättmjölk 0,5%",
+      "price": 19.5,
+      "quantity": 1,
+      "discount": 0,
+      "deposit": 0,
+      "category": null
+    },
+    {
+      "name": "Majskorn",
+      "price": 13.9,
+      "quantity": 1,
+      "discount": 0,
+      "deposit": 0,
+      "category": null
+    },
+    {
+      "name": "Morötter Eko",
+      "price": 16.9,
+      "quantity": 1,
+      "discount": 0,
+      "deposit": 0,
+      "category": null
+    },
+    {
+      "name": "Pumpakärnor",
+      "price": 32.6,
+      "quantity": 1,
+      "discount": 0,
+      "deposit": 0,
+      "category": null
+    },
+    {
+      "name": "Sallad isberg",
+      "price": 19.9,
+      "quantity": 0.8,
+      "discount": 0,
+      "deposit": 0,
+      "category": null
+    },
+    {
+      "name": "Söt strö",
+      "price": 51.9,
+      "quantity": 1,
+      "discount": 10.38,
+      "deposit": 0,
+      "category": null
+    },
+    {
+      "name": "Turkisk Yoghurt",
+      "price": 31.1,
+      "quantity": 1,
+      "discount": 0,
+      "deposit": 0,
+      "category": null
+    },
+    {
+      "name": "Ägg Frigående M",
+      "price": 40.6,
+      "quantity": 2,
+      "discount": 10.6,
+      "deposit": 0,
+      "category": null
+    },
+    {
+      "name": "Pantretur",
+      "price": -61,
+      "quantity": 1,
+      "discount": 0,
+      "deposit": 0,
+      "category": null
+    }
+  ]
+}

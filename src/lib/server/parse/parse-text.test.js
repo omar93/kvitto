@@ -87,6 +87,51 @@ describe('parseReceiptText', () => {
   });
 });
 
+describe('parseReceiptText (ICA Maxi column layout)', () => {
+  const ICA = [
+    'Kvitto Maxi ICA Stormarknad Haninge',
+    'Datum 2026-06-22 17:30',
+    'Beskrivning Artikelnummer Pris Mängd Summa(SEK)',
+    'Bifftomat lv 2003229 32,90 1,00 kg 12,24',
+    'Extra Creamy 2000685 52,90 1,00 st 52,90',
+    '*Gurka Haninge 2879144 7,50 2,00 st 27,60',
+    'Svensk gurka 2f15kr -12,60',
+    '*Ägg Frigående M 1430960 30,00 2,00 st 81,20',
+    'Ägg 30kr/st -21,20',
+    'Pantretur, låg moms 1,00 1 -1,00',
+    'Pantretur, låg moms 60,00 1 -60,00',
+    'Betalat 173,38'
+  ].join('\n');
+  const r = parseReceiptText(ICA);
+  const byName = (frag) => r.items.find((it) => it.name.includes(frag));
+
+  it('reads store, date and the Betalat total', () => {
+    expect(r.store).toBe('Maxi ICA Stormarknad Haninge');
+    expect(r.date).toBe('2026-06-22');
+    expect(r.total).toBe(173.38);
+  });
+
+  it('reads a weight item as per-kg price * computed weight', () => {
+    expect(byName('Bifftomat')).toMatchObject({ price: 32.9, quantity: 0.372, discount: 0 });
+  });
+
+  it('strips the offer asterisk and leaves plain items alone', () => {
+    expect(byName('Gurka').name).toBe('Gurka Haninge');
+    expect(byName('Extra')).toMatchObject({ price: 52.9, quantity: 1, discount: 0 });
+  });
+
+  it('turns a discount line into a per-unit discount off the gross unit price', () => {
+    expect(byName('Gurka')).toMatchObject({ price: 13.8, quantity: 2, discount: 6.3 });
+    expect(byName('Ägg')).toMatchObject({ price: 40.6, quantity: 2, discount: 10.6 });
+  });
+
+  it('combines pant returns into a single negative row', () => {
+    const pant = r.items.filter((it) => it.name === 'Pantretur');
+    expect(pant).toHaveLength(1);
+    expect(pant[0].price).toBe(-61);
+  });
+});
+
 describe('normalizeDecimals', () => {
   it('turns Swedish decimal commas into dots', () => {
     expect(normalizeDecimals('13,90 och 1,002kg')).toBe('13.90 och 1.002kg');
