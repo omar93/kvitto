@@ -2,9 +2,14 @@ import { resolveTab, findTab } from './tabs.js';
 
 // Column J is the 10th column (0-indexed 9); N is index 13 -> end-exclusive 14.
 const COL_J_INDEX = 9;
+const COL_K_INDEX = 10; // the price / sum column
 const COL_L_END = 12; // J:L (name, sum, date) end-exclusive
 const COL_N_END = 14;
 const BLACK = { red: 0, green: 0, blue: 0 };
+// Force the price column to a currency number format. Without this a cell can
+// inherit a stray date/time format from the template and render e.g. 27.1 as
+// "02.24" (27 days + 0.1*24h), even though the stored value is correct.
+const PRICE_FORMAT = { type: 'NUMBER', pattern: '#,##0.00" kr"' };
 
 /**
  * The K-cell for one item, as a formula a human can inspect: discount is taken
@@ -70,6 +75,22 @@ export function buildReceiptRows({ receipt, startRow, tabName, sheetId, location
     }
   });
 
+  // Force a number format on the price column (K) for the whole block so a stray
+  // date/time format can't make a correct value display as a time.
+  const priceFormat = {
+    repeatCell: {
+      range: {
+        sheetId,
+        startRowIndex: startRow - 1,
+        endRowIndex: lastItemRow,
+        startColumnIndex: COL_K_INDEX,
+        endColumnIndex: COL_K_INDEX + 1
+      },
+      cell: { userEnteredFormat: { numberFormat: PRICE_FORMAT } },
+      fields: 'userEnteredFormat.numberFormat'
+    }
+  };
+
   // Bold the store header row's name / sum / date (J:L).
   const boldHeader = {
     repeatCell: {
@@ -93,6 +114,7 @@ export function buildReceiptRows({ receipt, startRow, tabName, sheetId, location
       values: [storeRow, ...itemRows]
     },
     formatRequests: [
+      priceFormat,
       boldHeader,
       bottomBorder(startRow, 'SOLID'), // line under the store header row
       bottomBorder(lastItemRow, 'SOLID_THICK') // thick separator between purchases

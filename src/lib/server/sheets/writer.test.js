@@ -37,8 +37,18 @@ describe('buildReceiptRows', () => {
       ['Cola + pant', 19.15, '', 'Läsk/Snäx', '']
     ]);
 
+    // the whole price column (K) for the block gets a currency number format,
+    // so a stray date/time format can't render a correct value as a time
+    const priceFmt = out.formatRequests.find(
+      (r) => r.repeatCell && r.repeatCell.fields === 'userEnteredFormat.numberFormat'
+    );
+    expect(priceFmt.repeatCell.range).toEqual({
+      sheetId: 7, startRowIndex: 4, endRowIndex: 7, startColumnIndex: 10, endColumnIndex: 11
+    });
+    expect(priceFmt.repeatCell.cell.userEnteredFormat.numberFormat.type).toBe('NUMBER');
+
     // bold on J:L of the store header row (row 5)
-    const bold = out.formatRequests.find((r) => r.repeatCell);
+    const bold = out.formatRequests.find((r) => r.repeatCell && r.repeatCell.fields === 'userEnteredFormat.textFormat.bold');
     expect(bold.repeatCell.range).toEqual({
       sheetId: 7, startRowIndex: 4, endRowIndex: 5, startColumnIndex: 9, endColumnIndex: 12
     });
